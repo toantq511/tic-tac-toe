@@ -1,0 +1,27 @@
+.app-wrapper {
+	position: absolute;
+	left: 50%;
+	top: 40%;
+	transform: translate(-50%, -50%);
+}
+.board-wrapper {
+	display: grid;
+	width: fit-content;
+	border: 1px solid;
+}
+.cell-wrapper {
+	width: 5rem;
+	height: 5rem;
+	margin: 0;
+	box-sizing: border-box;
+	font-size: 3rem;
+	background-color: #ffffff;
+	border-radius: 0;
+	border: 1px solid;
+	outline: none;
+}
+.btn-reset {
+	margin-top: 1.5rem;
+	width: 100%;
+	height: 2rem;
+}
