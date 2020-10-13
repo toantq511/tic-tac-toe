@@ -1,7 +1,114 @@
-import React, { useState, useEffect } from "react";
-import "./style.css";
+import React from "react";
 
-const calculateWinner = (board) => {
+import Board from "./components/Board";
+import "./style.css";
+class App extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			history: [
+				{
+					squares: Array(9).fill(null),
+					location: [-1, -1],
+				},
+			],
+			stepNumber: 0,
+			xIsNext: true,
+			ascSort: true,
+		};
+	}
+
+	handleClick(i) {
+		const history = this.state.history.slice(0, this.state.stepNumber + 1);
+		const current = history[history.length - 1];
+		const squares = current.squares.slice();
+		if (calculateWinner(squares) || squares[i]) {
+			return;
+		}
+		squares[i] = this.state.xIsNext ? "X" : "O";
+		this.setState({
+			history: history.concat([
+				{
+					squares: squares,
+					location: [i % 3, Math.floor(i / 3)],
+				},
+			]),
+			stepNumber: history.length,
+			xIsNext: !this.state.xIsNext,
+		});
+	}
+
+	jumpTo(step) {
+		this.setState({
+			stepNumber: step,
+			xIsNext: step % 2 === 0,
+		});
+	}
+
+	render() {
+		const history = this.state.history;
+		const current = history[this.state.stepNumber];
+		const winner = calculateWinner(current.squares);
+		const moves = history.map((step, move) => {
+			const desc = move ? "Go to move #" + move : "Go to game start";
+			return (
+				<li key={move}>
+					<button onClick={() => this.jumpTo(move)}>
+						<span
+							style={
+								move === this.state.stepNumber ? { color: "red" } : undefined
+							}
+						>
+							{desc}
+						</span>
+					</button>
+					{move ? (
+						<span>
+							(Col: {step.location[0] + 1}, Row: {step.location[1] + 1})
+						</span>
+					) : null}
+					{move === this.state.stepNumber && (
+						<span style={{ color: "red" }}>(current)</span>
+					)}
+				</li>
+			);
+		});
+		let status;
+		if (winner) {
+			status = "Winner: " + current.squares[winner[0]];
+		} else if (moves.length === 10) status = "Draw";
+		else {
+			status = "Next player: " + (this.state.xIsNext ? "X" : "O");
+		}
+		return (
+			<div className="app-wrapper">
+				<h1>{status}</h1>
+				<Board
+					squares={current.squares}
+					onClick={(i) => this.handleClick(i)}
+					winner={winner}
+				/>
+				<div className="game-info">
+					<div>
+						<button
+							onClick={() =>
+								this.setState((state) => ({ ascSort: !state.ascSort }))
+							}
+						>
+							{this.state.ascSort ? "Sort Descend" : "Sort Ascend"}
+						</button>
+					</div>
+					<ol>{this.state.ascSort ? moves : moves.reverse()}</ol>
+				</div>
+			</div>
+		);
+	}
+}
+
+export default App;
+// ========================================
+
+function calculateWinner(squares) {
 	const lines = [
 		[0, 1, 2],
 		[3, 4, 5],
@@ -14,59 +121,9 @@ const calculateWinner = (board) => {
 	];
 	for (let i = 0; i < lines.length; i++) {
 		const [a, b, c] = lines[i];
-		if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-			return board[a];
+		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+			return [a, b, c];
 		}
 	}
 	return null;
-};
-
-const App = ({ size = 3 }) => {
-	const [board, setBoard] = useState(new Array(size * size).fill(null));
-	const [isCurrentX, setIsCurrentX] = useState(false);
-	const [winner, setWinner] = useState(null);
-	const reset = () => {
-		setBoard(new Array(size * size).fill(null));
-		setWinner(null);
-	};
-	useEffect(() => {
-		setWinner(calculateWinner(board));
-	}, [board]);
-
-	const handleClick = (cellId) => {
-		if (!board[cellId]) {
-			const current = isCurrentX ? "X" : "O";
-			setBoard(() => board.map((cell, id) => (cellId === id ? current : cell)));
-			setIsCurrentX(!isCurrentX);
-		}
-	};
-	return (
-		<div className="app-wrapper">
-			<h2 className="status-wrapper">
-				{winner
-					? "Winner: " + winner
-					: "Next Player: " + (isCurrentX ? "X" : "O")}
-			</h2>
-			<div
-				className="board-wrapper"
-				style={{ gridTemplateColumns: `repeat(${size}, 1fr)` }}
-			>
-				{board.map((cell, cellId) => (
-					<button
-						className="cell-wrapper"
-						disabled={winner ? true : false}
-						key={cellId}
-						onClick={() => handleClick(cellId)}
-					>
-						{cell}
-					</button>
-				))}
-			</div>
-			<button onClick={reset} className="btn-reset">
-				Restart
-			</button>
-		</div>
-	);
-};
-
-export default App;
+}
