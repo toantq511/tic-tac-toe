@@ -82,12 +82,14 @@ class App extends React.Component {
 		}
 		return (
 			<div className="app-wrapper">
-				<h1>{status}</h1>
-				<Board
-					squares={current.squares}
-					onClick={(i) => this.handleClick(i)}
-					winner={winner}
-				/>
+				<div>
+					<h1>{status}</h1>
+					<Board
+						squares={current.squares}
+						onClick={(i) => this.handleClick(i)}
+						winner={winner}
+					/>
+				</div>
 				<div className="game-info">
 					<div>
 						<button

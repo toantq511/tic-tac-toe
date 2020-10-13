@@ -1,3 +1,11 @@
+.app-wrapper {
+	display: flex;
+}
+.game-info {
+	margin-left: 5rem;
+	margin-top: 2rem;
+}
+
 .board-wrapper {
 	margin: 20px 0;
 }
