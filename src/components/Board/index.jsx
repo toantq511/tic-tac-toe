@@ -13,7 +13,7 @@ const Board = (props) => {
 	return (
 		<div className="board-wrapper">
 			<div className="col-label" style={{ marginLeft: "3rem" }}>
-				{[1, 2, 3].map((item) => (
+				{[...Array(props.size).keys()].map((item) => (
 					<span
 						style={{
 							width: "5rem",
@@ -22,11 +22,11 @@ const Board = (props) => {
 						}}
 						key={item}
 					>
-						Column {item}
+						Column {item + 1}
 					</span>
 				))}
 			</div>
-			{[0, 1, 2].map((item) => (
+			{[...Array(props.size).keys()].map((item) => (
 				<div className="board-row" key={item}>
 					<span
 						className="row-label"
@@ -34,7 +34,9 @@ const Board = (props) => {
 					>
 						Row {item + 1}
 					</span>
-					{[0, 1, 2].map((subItem) => renderSquare(subItem + item * 3))}
+					{[...Array(props.size).keys()].map((subItem) =>
+						renderSquare(subItem + item * 3)
+					)}
 				</div>
 			))}
 		</div>
